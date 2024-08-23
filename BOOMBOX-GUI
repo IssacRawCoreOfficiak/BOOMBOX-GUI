@@ -1,0 +1,107 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Orion/main/source"))()
+
+local gui = orion.lib.ui.main()
+local frame = gui:section("Boombox")
+
+local musicIdBox = frame:input("Music ID")
+
+local playButton = frame:button("Play")
+
+local pauseButton = frame:button("Pause")
+
+local espToggleButton = frame:toggle("ESP Players")
+local espEnabled = false
+
+local function espPlayer()
+for _, player in pairs(game.Players:GetPlayers()) do
+if player ~= game.Players.LocalPlayer then
+local character = player.Character
+if character then
+local box = Instance.new("BoxHandleAdornment")
+box.Adornee = character.HumanoidRootPart
+box.Size = character.HumanoidRootPart.Size
+box.Color3 = Color3.new(1, 0, 0)
+box.Parent = character.HumanoidRootPart
+end
+end
+end
+end
+
+local function playMusic()
+local music = Instance.new("Sound")
+music.SoundId = "rbxassetid://".. musicIdBox.Text
+music:Play()
+teleportPlayers()
+spamPartyTime()
+freezePlayers()
+end
+
+local function pauseMusic()
+music:Pause()
+unTeleportPlayers()
+unfreezePlayers()
+end
+
+local function teleportPlayers()
+for _, player in pairs(game.Players:GetPlayers()) do
+if player ~= game.Players.LocalPlayer then
+player.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+player.Character.Humanoid.WalkSpeed = 0
+end
+end
+end
+
+local function unTeleportPlayers()
+for _, player in pairs(game.Players:GetPlayers()) do
+if player ~= game.Players.LocalPlayer then
+player.Character.Humanoid.WalkSpeed = 16
+end
+end
+end
+
+local function freezePlayers()
+for _, player in pairs(game.Players:GetPlayers()) do
+if player ~= game.Players.LocalPlayer then
+player.Character.HumanoidRootPart.Anchored = true
+end
+end
+end
+
+local function unfreezePlayers()
+for _, player in pairs(game.Players:GetPlayers()) do
+if player ~= game.Players.LocalPlayer then
+player.Character.HumanoidRootPart.Anchored = false
+end
+end
+end
+
+local function spamPartyTime()
+for _, player in pairs(game.Players:GetPlayers()) do
+
+local chatService = game:GetService("ChatService")
+for i = 1, 10 do
+chatService:Chat(player, "IT'S PARTY TIME!")
+wait(1)
+end
+end
+end
+
+playButton:onclick(function()
+playMusic()
+end)
+
+pauseButton:onclick(function()
+pauseMusic()
+end)
+
+espToggleButton:ontoggle(function(toggle)
+espEnabled = toggle
+if espEnabled then
+espToggleButton:text("ESP Players (Enabled)")
+espPlayer()
+else
+espToggleButton:text("ESP Players (Disabled)")
+end
+end)
+
+orion.lib.init()
